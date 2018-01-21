@@ -12,5 +12,19 @@
 */
 
 $router->get('/', function () use ($router) {
-    //return $router->app->version();
+    return 'API v1';
+});
+
+$router->group(['prefix' => 'api/v1'], function () use ($router) {
+	
+	//--=API DIR START=--
+    $router->get('direction', 'DirectionController@get');
+    $router->post('direction', 'DirectionController@create');
+	
+	$router->get('direction/{id}', 'DirectionController@getspecific');
+	$router->put('direction/{id}', 'DirectionController@update');
+	
+	$router->delete('direction/{id}', 'DirectionController@delete');
+	//---=API DIR END=---
+	
 });
