@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateVacancyNumbersTable extends Migration
+class CreateSubdirectionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,16 @@ class CreateVacancyNumbersTable extends Migration
      */
     public function up()
     {
-        Schema::create('vacancy_numbers', function (Blueprint $table) {
+        Schema::create('subdirections', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('skill_id');
-            $table->integer('last_count_vacancy');
+			$table->integer('direction_id')->unsigned();
+			$table->integer('sub_id')->unsigned();
             $table->timestamps();
+			
+			$table->foreign('direction_id')->references('id')->on('directions');
+            $table->foreign('sub_id')->references('id')->on('directions');
         });
+
     }
 
     /**
@@ -28,6 +32,6 @@ class CreateVacancyNumbersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('vacancy_numbers');
+        Schema::dropIfExists('subdirections');
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateProgressesTable extends Migration
+class CreateConfirmsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateProgressesTable extends Migration
      */
     public function up()
     {
-        Schema::create('progresses', function (Blueprint $table) {
+        Schema::create('confirms', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id');
-            $table->integer('material_id');
-            $table->string('status');
+			$table->integer('user_id');
+            $table->text('token');
+            $table->string('type');
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ class CreateProgressesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('progresses');
+        Schema::dropIfExists('confirms');
     }
 }
