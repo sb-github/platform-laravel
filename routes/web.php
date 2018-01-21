@@ -24,6 +24,9 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
 	$router->get('direction/{id}', 'DirectionController@getspecific');
 	$router->put('direction/{id}', 'DirectionController@update');
 	
+	$router->get('direction/{id}/subdirections', 'DirectionController@subdir');
+	$router->post('direction/{id}/subdirections', 'DirectionController@addsubdir');
+	
 	$router->delete('direction/{id}', 'DirectionController@delete');
 	//---=API DIR END=---
 	
