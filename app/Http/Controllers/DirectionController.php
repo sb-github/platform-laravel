@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use \App\Direction;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Validator;
 
 class DirectionController extends Controller
 {
@@ -19,82 +20,187 @@ class DirectionController extends Controller
     }
 	
 	public function get()
-	{
-		try {		
-			return response()->json(Direction::all());
-		} catch(Exception $e) {
-			return response()->json($e);
-		}
+	{	
+		return response()->json(Direction::all());
 	}
 	
 	public function create(Request $request)
 	{
-		try {
-			$dir = Direction::create($request->all());
+		$rules =  array(
+            'title' => 'required',
+			'image' => 'nullable',
+			'parent' => 'nullable'
+        );
+        
+        $messages = array(
+            'title.required' => 'title is required.'
+        );
+		
+		$validator = \Validator::make(array('title' => $request->title), $rules, $messages);
+ 
+		if(!$validator->fails()) {
+			$new = array(
+				'title' => $request->title,
+				'image' => null,
+				'parent' => null
+			);
 			
-			return response()->json($request->all());
-		} catch(Exception $e) {
-			return response()->json($e);
+			if($request->has('image')) $new['image'] = $request->image;
+			
+			if($request->has('parent')) {
+				$new['parent'] = $request->parent;
+				$dirparent = Direction::find($new['parent']);
+				
+				if(empty($dirparent)) {
+					$messages = array(
+						'status' => 'parent not found.'
+					);
+					return response()->json($messages);
+				}
+			}
+			
+			$dir = Direction::create($new);
+			$new = array_merge($new, array('status' => 'created'));
+			return response()->json($new);
+		} else {
+			$errors = $validator->errors();
+            return response()->json($errors->all());
 		}
 	}
 	
 	public function getspecific($id)
-	{
-		try {
-			$dir = Direction::find($id);
-			
-			return response()->json($dir);
-		} catch(Exception $e) {
-			return response()->json($e);
-		}
+	{   
+        $messages = array(
+            'status' => 'not found'
+        );
+		
+		$dir = Direction::find($id);
+		
+		if(empty($dir)) return response()->json($messages);
+		else return response()->json($dir);
 	}
 	
 	public function update($id, Request $request)
 	{
-		try {
-			$dir = Direction::find($id);
+		$messages = array(
+            'status' => 'not found'
+        );
+		
+		$dir = Direction::find($id);
+		
+		if(empty($dir)) return response()->json($messages);
+		
+		$rules =  array(
+            'title' => 'required',
+			'image' => 'nullable',
+			'parent' => 'nullable'
+        );
+        
+        $messages = array(
+            'title.required' => 'title is required.'
+        );
+		
+		$validator = \Validator::make(array('title' => $request->title), $rules, $messages);
+		
+		if(!$validator->fails()) {
+			
 			$dir->title = $request->input('title');
 			$dir->image = $request->input('image');
-			$dir->save();
 			
-			return response()->json($request->all());
-		} catch(Exception $e) {
-			return response()->json($e);
+			if($request->has('parent')) {
+				$dirparent = Direction::find($request->parent);
+					
+				if(empty($dirparent)) {
+					$messages = array(
+						'status' => 'parent not found.'
+					);
+					return response()->json($messages);
+				}
+				
+				$dir->parent = $request->parent;
+			}
+
+			$dir->save();
+			$status = array_merge($request->all(), array('status' => 'updated'));
+			return response()->json($status);
+			
+		} else {
+			$errors = $validator->errors();
+            return response()->json($errors->all());
 		}
 	}
 	
 	public function delete($id)
 	{
-		try {
-			$dir  = Direction::find($id);
-			$dir->delete();
-	 
-			return response()->json('Removed successfully.');
-		} catch(Exception $e) {
-			return response()->json($e);
-		}
+		$messages = array(
+            'status' => 'not found'
+        );
+		
+		$dir  = Direction::find($id);
+		
+		if(empty($dir)) return response()->json($messages);
+		$status = array_merge($dir->get(), array('status' => 'deleted'));
+		$dir->delete();
+		
+		return response()->json($status);
 	}
 	
 	public function subdir($id)
 	{
-		try {		
-			$dir = Direction::find($id);
-			return response()->json($dir->subdirections);
-		} catch(Exception $e) {
-			return response()->json($e);
-		}
+		$messages = array(
+            'status' => 'not found'
+        );
+		
+		$dir = Direction::find($id);
+		
+		if(empty($dir)) return response()->json($messages);
+		
+		$sub = Direction::where('parent', $id)->get();
+		return response()->json($sub);
 	}
 	
 	public function addsubdir($id, Request $request)
 	{
-		try {
+		$rules =  array(
+            'title' => 'required|max:60',
+			'image' => 'nullable|image',
+			'parent' => 'integer'
+        );
+        
+        $messages = array(
+            'title.required' => 'title is required.',
+			'title.max' => 'title - max:60.',
+			'image.image' => 'image has no image format.',
+			'parent.integer' => 'parent must be integer.'
+        );
+		
+		$validator = \Validator::make(array('title' => $request->input('title'), 'image' => $request->input('image'), 'parent' => $id), $rules, $messages);
+		
+		if(!$validator->fails()) {
+			
+			$messages = array(
+				'status' => 'not found'
+			);
+			
 			$dir = Direction::find($id);
-			$subdir = Direction::create($request->all());
-			$dir->subdirections()->attach($subdir);
-			return response()->json($request->all());
-		} catch(Exception $e) {
-			return response()->json($e);
+			
+			if(empty($dir)) return response()->json($messages);
+			
+			$sub = array(
+				'title' => $request->input('title'),
+				'image' => $request->input('image'),
+				'parent' => intval($id)
+			);
+			
+			$subdir = Direction::create($sub);
+			
+			$status = array_merge($sub, array('status' => 'subdir created'));
+			return response()->json($status);
+		
+		} else {
+			$errors = $validator->errors();
+            return response()->json($errors->all());
 		}
 	}
-    //
+
 }
