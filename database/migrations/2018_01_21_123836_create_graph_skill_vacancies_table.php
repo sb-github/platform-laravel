@@ -17,6 +17,7 @@ class CreateGraphSkillVacanciesTable extends Migration
             $table->increments('id');
             $table->integer('graph_skill_id')->unsigned();
 			$table->integer('vacancy_id')->unsigned();
+			$table->datetime('last_date');
             $table->timestamps();
 			
 			$table->foreign('graph_skill_id')->references('id')->on('graph_skill');
