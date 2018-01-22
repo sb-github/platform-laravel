@@ -12,5 +12,10 @@
 */
 
 $router->get('/', function () use ($router) {
-    return $router->app->version();
+    
 });
+$router->get('/skills', 'SkillController@all');
+$router->post('/skills', 'SkillController@create');
+$router->put('/skills/{id}','SkillController@update');
+$router->get('/skills/{id}','SkillController@showone');
+$router->delete('/skills/{id}','SkillController@delete');
