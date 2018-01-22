@@ -18,6 +18,7 @@ class CreateGraphSkillTable extends Migration
 			$table->integer('parent_skill');
 			$table->integer('related_skill');
 			$table->integer('weight');
+			$table->integer('last_data');
             $table->timestamps();
         });
     }
