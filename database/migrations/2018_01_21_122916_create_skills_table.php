@@ -15,10 +15,10 @@ class CreateSkillsTable extends Migration
     {
         Schema::create('skills', function (Blueprint $table) {
             $table->increments('id');
-			$table->string('title');
+		$table->string('title');
             $table->string('image')->nullable();
-            $table->integer('difficulty');
-            $table->text('description');
+            $table->integer('difficulty')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
@@ -33,3 +33,4 @@ class CreateSkillsTable extends Migration
         Schema::dropIfExists('skills');
     }
 }
+
