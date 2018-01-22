@@ -19,8 +19,5 @@ class Direction extends Model
     public function skills() {
         return $this->belongsToMany('App\Skill');
     }
-	
-	public function subdirections() {
-        return $this->belongsToMany('App\Direction', 'subdirections', 'direction_id', 'sub_id');
-    }
+
 }
