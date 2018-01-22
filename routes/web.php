@@ -19,3 +19,7 @@ $router->post('/skills', 'SkillController@create');
 $router->put('/skills/{id}','SkillController@update');
 $router->get('/skills/{id}','SkillController@showone');
 $router->delete('/skills/{id}','SkillController@delete');
+
+//--=Merge skill API=--
+$router->post('/merge/{requestedSkill}','MergeController@merge');
+//--=Merge skill API=--

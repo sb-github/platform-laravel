@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\GraphSkill;
 use App\GraphSkillVacancy;
+use App\Skill;
 use App\Vacancy;
 use GuzzleHttp;
 use Illuminate\Http\Request;
@@ -16,57 +17,69 @@ class MergeController extends Controller
 
     }
 
-    public function skills($requestedSkill)
+    public function skills($requestedSkill, $type)
     {
         if(strcmp($requestedSkill,"all") == 0)
         {
-            $result = Skill::select('name')
+            $result = Skill::select('title')
                 ->get()
                 ->toJson();
         }
         else
         {
             $idRequestedSkill = Skill::select('id')
-                ->where('name', $requestedSkill)
+                ->where('title', $requestedSkill)
                 ->first()
                 ->toArray()['id'];
 
-            $result = GraphSkill::select('parent_skill', 'related_skill')
-                ->where('parent_skill', $idRequestedSkill)
-                ->orWhere('related_skill', $idRequestedSkill)
-                ->get()
-                ->toArray();
-
-            $idRelatedSkills = [];
-            foreach ($result as $item)
+            if(strcmp($type,"update") == 0)
             {
-                $idRelatedSkills[] = $item['parent_skill'];
-                $idRelatedSkills[] = $item['related_skill'];
-            }
+                $relatedSkills = GraphSkill::select('parent_skill', 'related_skill')
+                    ->where('parent_skill', $idRequestedSkill)
+                    ->orWhere('related_skill', $idRequestedSkill)
+                    ->get()
+                    ->toArray();
 
-            $result = Skill::select('name')
-                ->whereIn('id', array_unique($idRelatedSkills))
-                ->get()
-                ->toJson();
+                $idRelatedSkills = [];
+                foreach ($relatedSkills as $item)
+                {
+                    $idRelatedSkills[] = $item['parent_skill'];
+                    $idRelatedSkills[] = $item['related_skill'];
+                }
+
+                $result = Skill::select('title')
+                    ->whereIn('id', array_unique($idRelatedSkills))
+                    ->get()
+                    ->toJson();
+            }
+            else
+            {
+                $result = Skill::select('title')
+                    ->get()
+                    ->toJson();
+            }
         }
 
         $skills = [];
 
         foreach (json_decode($result) as $item)
-            $skills[] = $item->name;
+            $skills[] = $item->title;
 
         return $skills;
     }
     public function merge(Request $request, $requestedSkill)
     {
-        $skills = $this->skills($requestedSkill);
-        //$crawler = $request->input('crawler_id');
-        $crawler = 'test';
+        $start = microtime(true);
+
+        $skills = $this->skills($requestedSkill,'search');
+        $crawler = $request->input('crawler_id');
 
         $result = $this->callAPI($crawler, $requestedSkill, $skills);
 
         foreach ($result as $skill)
             $this->graphMerger($skill);
+
+        return response()->json(['time' => microtime(true) - $start]);
     }
     public function callAPI($crawler,$requestedSkill, $skills)
     {
@@ -84,7 +97,7 @@ class MergeController extends Controller
     public function graphMerger($skill)
     {
         $parentSkill = Skill::select('id')
-            ->where('name', $skill->skill)
+            ->where('title', $skill->skill)
             ->first()
             ->toArray()['id'];
 
@@ -101,7 +114,7 @@ class MergeController extends Controller
     public function relationMerger($parentSkill, $relatedSkill, $lastDate)
     {
         $relatedSkill->id = Skill::select('id')
-            ->where('name', $relatedSkill->subskill)
+            ->where('title', $relatedSkill->subskill)
             ->first()
             ->toArray()['id'];
 
@@ -205,10 +218,5 @@ class MergeController extends Controller
             ->update([
                 'last_date' => date('Y-m-d H:i:s', strtotime($lastDate))
             ]);
-    }
-
-    public function test()
-    {
-        echo 'Hello';
     }
 }
