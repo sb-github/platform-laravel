@@ -18,7 +18,6 @@ class CreateSkillsTable extends Migration
 		$table->string('title');
             $table->string('image')->nullable();
             $table->integer('difficulty')->nullable();
-            $table->integer('weight')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
         });
