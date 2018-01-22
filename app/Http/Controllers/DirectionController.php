@@ -73,6 +73,7 @@ class DirectionController extends Controller
 		
 		if(!$validator->fails()) {
 			
+			$dir = Direction::find($id);
 			$dir->title = $request->input('title');
 			$dir->image = $request->input('image');
 			
