@@ -61,8 +61,7 @@ class DirectionController extends Controller
 	public function getspecific($id)
 	{   
         $val = $this->val_id($id);
-		if(!$val['status']) return response()->json($val['body']);
-		else return response()->json($val['body']);
+		return response()->json($val['body']);
 	}
 	
 	public function update($id, Request $request)
@@ -153,17 +152,10 @@ class DirectionController extends Controller
 		$rules =  array(
             'title' => 'required|max:60',
 			'image' => 'nullable|image',
-			'parent' => 'integer'
-        );
-        
-        $messages = array(
-            'title.required' => 'title is required.',
-			'title.max' => 'title - max:60.',
-			'image.image' => 'image has no image format.',
-			'parent.integer' => 'parent must be integer.'
+			'parent' => 'nullable|integer'
         );
 		
-		return \Validator::make(array('title' => $request->input('title'), 'image' => $request->input('image'), 'parent' => $id), $rules, $messages);
+		return \Validator::make(array('title' => $request->input('title'), 'image' => $request->input('image'), 'parent' => $request->input('parent')), $rules);
 	}
 	
 	public function val_id($id)
@@ -174,8 +166,9 @@ class DirectionController extends Controller
 			
 		$dir = Direction::find($id);
 			
-		if(empty($dir)) return array( 'status' => false, 'body' => $messages );
-		else return array( 'status' => true, 'body' => $dir );
+		return (empty($dir)) 
+		? array( 'status' => false, 'body' => $messages )
+		: array( 'status' => true, 'body' => $dir );
 	}
 
 }

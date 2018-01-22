@@ -18,16 +18,16 @@ $router->get('/', function () use ($router) {
 $router->group(['prefix' => 'api/v1'], function () use ($router) {
 	
 	//--=API DIR START=--
-    $router->get('direction', 'DirectionController@get');
-    $router->post('direction', 'DirectionController@create');
+    $router->get('directions', 'DirectionController@get');
+    $router->post('directions', 'DirectionController@create');
 	
-	$router->get('direction/{id}', 'DirectionController@getspecific');
-	$router->put('direction/{id}', 'DirectionController@update');
+	$router->get('directions/{id}', 'DirectionController@getspecific');
+	$router->put('directions/{id}', 'DirectionController@update');
 	
-	$router->get('direction/{id}/subdirections', 'DirectionController@subdir');
-	$router->post('direction/{id}/subdirections', 'DirectionController@addsubdir');
+	$router->get('directions/{id}/subdirections', 'DirectionController@subdir');
+	$router->post('directions/{id}/subdirections', 'DirectionController@addsubdir');
 	
-	$router->delete('direction/{id}', 'DirectionController@delete');
+	$router->delete('directions/{id}', 'DirectionController@delete');
 	//---=API DIR END=---
 	
 });
