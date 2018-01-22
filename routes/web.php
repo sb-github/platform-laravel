@@ -12,5 +12,20 @@
 */
 
 $router->get('/', function () use ($router) {
-    //return $router->app->version();
+    return 'API v1';
 });
+
+
+	
+	//--=API DIR START=--
+    $router->get('material', 'MaterialController@get');
+    $router->post('material', 'MaterialController@create');
+	
+	$router->get('material/{id}', 'MaterialController@getspecific');
+	$router->put('material/{id}', 'MaterialController@update');
+	
+	$router->get('skill/{id}/materials', 'MaterialController@getBySkill');
+	
+	$router->delete('material/{id}', 'MaterialController@delete');
+	//---=API DIR END=---
+
