@@ -13,16 +13,18 @@ class Skill extends Model
 {
     protected $table = 'skills';
 
-    protected $fillable = ['title','image'];
+    protected $fillable = [
+        'title',
+        'image'
+    ];
+
+    protected $hidden = array('pivot');
 
 
-
-    public function Group() {
-        return $this->belongsToMany('App\Group');
+    public function direction() {
+        return $this->belongsToMany('App\Direction');
     }
 
-    public function User() {
-        return $this->belongsToMany('App\User');
-    }
+
 
 }
