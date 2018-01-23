@@ -6,6 +6,7 @@ use \App\Material;
 use \App\Skill;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Validator;
 
 class MaterialController extends Controller
 {
@@ -20,71 +21,139 @@ class MaterialController extends Controller
     }
 
     public function get()
-    {
-        try {       
+    {    
             return response()->json(Material::all());
-        } catch(Exception $e) {
-            return response()->json($e);
-        }
     }
     
     public function create(Request $request)
     {
-        try {
-            Material::create($request->all());
+        $validator = $this->validator($request);
+        
+        if(!$validator->fails()) {
+            $new = array(
+                'skill_id' => $request->skill_id,
+                'text' => null,
+                'title' => $request->title
+            );
             
-            return response()->json($request->all());
-        } catch(Exception $e) {
-            return response()->json($e);
+            if($request->has('text')) {
+                $new['text'] = $request->text;
+
+                $skill = Skill::find($new['skill_id']);          
+                if(empty($skill)) {
+                    $messages = array(
+                        'status' => 'Skill not found.'
+                    );
+                    return response()->json($messages);
+                }
+            }
+            
+            $item = Material::create($new);
+            $new = array_merge($new, array('status' => 'created'));
+            return response()->json($new);
+        } else {
+            $errors = $validator->errors();
+            return response()->json($errors->all());
         }
     }
     
     public function getspecific($id)
     {
-        try {
-            $item = Material::find($id);
-            
-            return response()->json($item);
-        } catch(Exception $e) {
-            return response()->json($e);
-        }
+        $val = $this->val_id($id);
+        return response()->json($val['body']);
     }
     
     public function update($id, Request $request)
     {
-        try {
+
+        $val = $this->val_id($id);
+        if(!$val['status']) return response()->json($val['body']);
+        
+        $validator = $this->validator($request);
+        
+        if(!$validator->fails()) {
+            
             $item = Material::find($id);
-            $item->skill_id = $request->input('skill_id');
             $item->text = $request->input('text');
             $item->title = $request->input('title');
-            $item->save();
             
-            return response()->json($request->all());
-        } catch(Exception $e) {
-            return response()->json($e);
+            if($request->has('skill_id')) {
+                $skill = Skill::find($request->skill_id);
+                    
+                if(empty($skill)) {
+                    $messages = array(
+                        'status' => 'Skill not found.'
+                    );
+                    return response()->json($messages);
+                }
+                
+                $item->skill_id = $request->skill_id;
+            }
+
+            $item->save();
+            $status = array_merge($request->all(), array('status' => 'updated'));
+            return response()->json($status);
+            
+        } else {
+            $errors = $validator->errors();
+            return response()->json($errors->all());
         }
+
     }
     
     public function delete($id)
     {
-        try {
-            $item = Material::find($id);
-            $item->delete();
-     
-            return response()->json('Removed successfully.');
-        } catch(Exception $e) {
-            return response()->json($e);
-        }
+
+        $val = $this->val_id($id);
+        if(!$val['status']) return response()->json($val['body']);
+        
+        $item = Material::find($id);
+        $item_id = $item->id;
+        $body = $item;
+        $item->delete();
+
+        return response()->json(['status' => "Item deleted.", 'item_id' => $item_id]);
+        
     }
 
     public function getBySkill($id)
     {
-        try {       
-            $item = Skill::find($id);
-            return response()->json($item->materials);
-        } catch(Exception $e) {
-            return response()->json($e);
+        $messages = array(
+            'status' => 'not found'
+        );
+
+        $item = Skill::find($id);
+        if(empty($item))
+        {
+            return response()->json(['status' => false, 'body' => $messages]);
         }
+        else
+            return response()->json($item->materials);
+
     }
-    
+
+
+    public function validator($request) 
+    {
+        $rules =  array(
+            'skill_id' => 'required|integer',
+            'text' => 'nullable',
+            'title' => 'required|max:40'
+        );
+        
+        return \Validator::make(array('skill_id' => $request->input('skill_id'), 'text' => $request->input('text'), 'title' => $request->input('title')), $rules);
+    }    
+
+    public function val_id($id)
+    {
+        $messages = array(
+            'status' => 'not found'
+        );
+            
+        $item = Material::find($id);
+
+        return empty($item) 
+                ? array( 'status' => false, 'body' => $messages )
+                : array( 'status' => true, 'body' => $item );
+    }
 }

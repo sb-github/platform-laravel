@@ -15,9 +15,8 @@ $router->get('/', function () use ($router) {
     return 'API v1';
 });
 
-
 	
-	//--=API DIR START=--
+	//--=API MATERIALS START=--
     $router->get('material', 'MaterialController@get');
     $router->post('material', 'MaterialController@create');
 	
@@ -27,5 +26,17 @@ $router->get('/', function () use ($router) {
 	$router->get('skill/{id}/materials', 'MaterialController@getBySkill');
 	
 	$router->delete('material/{id}', 'MaterialController@delete');
+	//---=API MATERIALS END=---
+	
+	//--=API DIR START=--
+    $router->get('directions', 'DirectionController@get');
+    $router->post('directions', 'DirectionController@create');
+	
+	$router->get('directions/{id}', 'DirectionController@getspecific');
+	$router->put('directions/{id}', 'DirectionController@update');
+	
+	$router->get('directions/{id}/subdirections', 'DirectionController@subdir');
+	$router->post('directions/{id}/subdirections', 'DirectionController@addsubdir');
+	
+	$router->delete('directions/{id}', 'DirectionController@delete');
 	//---=API DIR END=---
-
