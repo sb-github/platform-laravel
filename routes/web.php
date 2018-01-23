@@ -14,8 +14,17 @@
 $router->get('/', function () use ($router) {
     return 'API v1';
 });
-
-$router->group(['prefix' => 'api/v1'], function () use ($router) {
+	$router->group(['prefix' => 'api/v1'], function () use ($router) {
+	
+        //--=API MATERIALS START=--
+    $router->get('material', 'MaterialController@get');
+    $router->post('material', 'MaterialController@create');
+	  $router->get('material/{id}', 'MaterialController@getspecific');
+	  $router->put('material/{id}', 'MaterialController@update');
+	  $router->get('skill/{id}/materials', 'MaterialController@getBySkill');
+	  $router->delete('material/{id}', 'MaterialController@delete');
+	      //---=API MATERIALS END=---
+	
         //--=API DIR START=--
     $router->get('directions', 'DirectionController@get');
     $router->post('directions', 'DirectionController@create');
@@ -36,3 +45,4 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
     $router->post('/directions/{id}/skills/{skillId}','SkillController@addtodir');
         //---=API SKILLS END=---
 });
+
