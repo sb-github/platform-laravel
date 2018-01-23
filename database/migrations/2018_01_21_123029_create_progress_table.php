@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateNotificationsTable extends Migration
+class CreateProgressTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,15 @@ class CreateNotificationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('notifications', function (Blueprint $table) {
+        Schema::create('progress', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id');
-            $table->string('type');
-            $table->text('message');
+			$table->integer('user_id')->unsigned();
+            $table->integer('material_id')->unsigned();
+            $table->string('status');
             $table->timestamps();
+			
+			$table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('material_id')->references('id')->on('materials');
         });
     }
 
@@ -29,6 +32,6 @@ class CreateNotificationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('notifications');
+        Schema::dropIfExists('progress');
     }
 }

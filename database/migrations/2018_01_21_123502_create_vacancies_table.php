@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateConfirmsTable extends Migration
+class CreateVacanciesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreateConfirmsTable extends Migration
      */
     public function up()
     {
-        Schema::create('confirms', function (Blueprint $table) {
+        Schema::create('vacancies', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id');
-            $table->text('token');
-            $table->string('type');
-            $table->dateTime('expired_at');
+			$table->text('link');
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ class CreateConfirmsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('confirms');
+        Schema::dropIfExists('vacancies');
     }
 }
