@@ -50,8 +50,8 @@ class DirectionController extends Controller
 			}
 			
 			$dir = Direction::create($new);
-			$new = array_merge($new, array('status' => 'created'));
-			return response()->json($new);
+            $new = array_merge($new, array('status' => 'created'));
+            return response()->json($new);
 		} else {
 			$errors = $validator->errors();
             return response()->json($errors->all());
