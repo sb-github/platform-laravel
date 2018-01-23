@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Skill;
+use App\Direction;
 use FastRoute\Route;
 use Illuminate\Http\Request;
 use Mockery\Exception;
+use Validator;
 
 class SkillController extends Controller
 {
@@ -17,51 +19,117 @@ class SkillController extends Controller
      */
     public function all()
     {
-        try {
-            $skills = Skill::all();
-            return response()->json($skills);
-        }catch(Exception $e) {
-            return response()->json('Somethig going wrong! Sorry');
-        }
+            return response()->json(Skill::all());
     }
+
     public function showone($id)
     {
-        try {
-            $skills = Skill::find($id);
-            return response()->json($skills);
-        }catch(Exception $e) {
-            return response()->json($e);
-        }
+        $val = $this->val_id($id);
+        return response()->json($val['body']);
     }
+
     public function create(Request $request)
     {
-        try {
-            $data = Skill::create($request->all());
-            return response()->json($request->all());
-        }catch(Exception $e) {
-                return response()->json($e);
-            }
+        $validator = $this->validator($request);
+
+        if(!$validator->fails()) {
+            $new = array(
+                'title' => $request->title,
+                'image' => null,
+            );
+
+            if($request->has('image')) $new['image'] = $request->image;
+
+            $skill = Skill::create($new);
+            $new = array_merge($new, array('status' => 'created'));
+            return response()->json($new);
+        }else {
+            $errors = $validator->errors();
+            return response()->json($errors->all());
+        }
     }
+
     public function update($id, Request $request)
     {
-        try {
-            $data = Skill::find($id);
-            $data->title = $request->input('title');
-            $data->image = $request->input('image');
-            $data->save();
-            return response()->json($request->all());
-        }catch(Exception $e) {
-            return response()->json($e);
+        $val = $this->val_id($id);
+        if(!$val['status']) return response()->json($val['body']);
+
+        $validator = $this->validator($request);
+
+        if(!$validator->fails()) {
+            $skill = Skill::find($id);
+            $skill->title = $request->input('title');
+            $skill->image = $request->input('image');
+            $skill->save();
+            $status = array_merge($request->all(), array('status' => 'updated'));
+            return response()->json($status);
+        }else {
+            $errors = $validator->errors();
+            return response()->json($errors->all());
         }
     }
     public function delete($id)
     {
-        try {
-            $skill = Skill::find($id);
-            $skill->delete();
-            return response()->json('Removed successful');
-        }catch(Exception $e) {
-            return response()->json($e);
-        }
+        $val = $this->val_id($id);
+        if(!$val['status']) return response()->json($val['body']);
+
+        $skill = Skill::find($id);
+
+        $status = array_merge($skill->get(), array('status' => 'deleted'));
+
+        $skill->delete();
+        return response()->json($status);
+    }
+    public function dir($id)
+    {
+        $val = $this->dir_val_id($id);
+        if(!$val['status']) return response()->json($val['body']);
+
+        $dir = Direction::find($id);
+        return response()->json($val['body']);
+    }
+    public function addtodir($id, $skillId)
+    {
+        $val = $this->dir_val_id($id);
+        $val2 = $this->val_id($skillId);
+        if(!$val['status'] && !$val2['status']) return response()->json($val , $val2);
+
+        $direction= Direction::find($id);
+        $direction->skills()->attach($skillId);
+        return response()->json($direction);
+    }
+
+    public function validator($request)
+    {
+        $rules =  array(
+            'title' => 'required|max:60',
+            'image' => 'nullable|image',
+        );
+
+        return \Validator::make(array('title' => $request->input('title'), 'image' => $request->input('image')), $rules);
+    }
+    public function val_id($id)
+    {
+        $messages = array(
+            'status' => 'skill not found'
+        );
+
+        $skill = Skill::find($id);
+
+        return (empty($skill))
+            ? array( 'status' => false, 'body' => $messages )
+            : array( 'status' => true, 'body' => $skill );
+    }
+    public function dir_val_id($id)
+    {
+        $messages = array(
+            'status' => 'direction not found'
+        );
+
+        $dir = Direction::find($id);
+
+        return (empty($dir))
+            ? array( 'status' => false, 'body' => $messages )
+            : array( 'status' => true, 'body' => $dir );
     }
 }
