@@ -14,7 +14,7 @@
 $router->get('/', function () use ($router) {
     return 'API v1';
 });
-	//$router->group(['prefix' => 'api/v1'], function () use ($router) {
+	$router->group(['prefix' => 'api/v1'], function () use ($router) {
 	
         //--=API MATERIALS START=--
     $router->get('material', 'MaterialController@get');
@@ -49,7 +49,6 @@ $router->get('/', function () use ($router) {
     $router->get('/stop_word', 'StopWordController@all');
     $router->get('/stop_word/{id}','StopWordController@showone');
     $router->post('/stop_word', 'StopWordController@create');
-    //$router->post('/stop_word_array', 'StopWordController@create_array');
     $router->put('/stop_word/{id}','StopWordController@update');
     $router->delete('/stop_word','StopWordController@del_all');
     $router->delete('/stop_word/{id}','StopWordController@delete');

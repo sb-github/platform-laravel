@@ -109,7 +109,6 @@ class MaterialController extends Controller
         
         $item = Material::find($id);
         $item_id = $item->id;
-        $body = $item;
         $item->delete();
 
         return response()->json(['status' => "Item deleted.", 'item_id' => $item_id]);
