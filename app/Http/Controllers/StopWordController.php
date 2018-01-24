@@ -21,13 +21,6 @@ class StopWordController extends Controller
         return response()->json(StopWord::all());
     }
 
-    public function del_all()
-    {   
-        StopWord::truncate();
-        return response()->json(['status' => "Items deleted."]);
-
-    }
-
     public function showone($id)
     {
         $val = $this->val_id($id);
@@ -46,12 +39,13 @@ class StopWordController extends Controller
                 );
                 $stop_word = StopWord::create($new);
                 $new = array_merge($new, array('status' => 'created'));
-                //return response()->json($new);
+                
             }else {
                 $errors = $validator->errors();
                 return response()->json($errors->all());
             }
         }
+        return response()->json(['status' => "Items added"]);
     }
 
     public function update($id, Request $request)
@@ -72,6 +66,7 @@ class StopWordController extends Controller
             return response()->json($errors->all());
         }
     }
+
     public function delete($id)
     {
 
@@ -86,6 +81,12 @@ class StopWordController extends Controller
         return response()->json(['status' => "Item deleted.", 'item_id' => $item_id]);
     }
 
+    public function del_all()
+    {
+        StopWord::truncate();
+        return response()->json(['status' => "Items deleted."]);
+
+    }
 
     public function validator($request)
     {
