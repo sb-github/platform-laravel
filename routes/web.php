@@ -12,20 +12,25 @@
 */
 
 $router->get('/', function () use ($router) {
+
     return 'API v1';
 });
-	$router->group(['prefix' => 'api/v1'], function () use ($router) {
-	
-        //--=API MATERIALS START=--
+$router->group(['prefix' => 'api/v1'], function () use ($router) {
+
+	//--=Merge skill API=--
+    $router->post('/merge/{requestedSkill}','MergeController@merge');
+    //--=Merge skill API=--
+
+    //--=API MATERIALS START=--
     $router->get('material', 'MaterialController@get');
     $router->post('material', 'MaterialController@create');
 	$router->get('material/{id}', 'MaterialController@getspecific');
 	$router->put('material/{id}', 'MaterialController@update');
 	$router->get('skill/{id}/materials', 'MaterialController@getBySkill');
 	$router->delete('material/{id}', 'MaterialController@delete');
-	      //---=API MATERIALS END=---
+	  //---=API MATERIALS END=---
 	
-        //--=API DIR START=--
+    //--=API DIR START=--
     $router->get('directions', 'DirectionController@get');
     $router->post('directions', 'DirectionController@create');
     $router->get('directions/{id}', 'DirectionController@getspecific');
@@ -33,9 +38,9 @@ $router->get('/', function () use ($router) {
     $router->get('directions/{id}/subdirections', 'DirectionController@subdir');
     $router->post('directions/{id}/subdirections', 'DirectionController@addsubdir');
     $router->delete('directions/{id}', 'DirectionController@delete');
-        //---=API DIR END=---
+    //---=API DIR END=---
 
-        //--=API SKILL START=--
+    //--=API SKILL START=--
     $router->get('/skills', 'SkillController@all');
     $router->post('/skills', 'SkillController@create');
     $router->put('/skills/{id}','SkillController@update');
@@ -53,6 +58,4 @@ $router->get('/', function () use ($router) {
     $router->delete('/stop_word','StopWordController@del_all');
     $router->delete('/stop_word/{id}','StopWordController@delete');
             //---=API STOP_WORDS END=---
-
-//});
-
+});
