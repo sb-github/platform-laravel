@@ -48,5 +48,6 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
     $router->delete('/skills/{id}','SkillController@delete');
     $router->get('/directions/{id}/skills','SkillController@dir');
     $router->post('/directions/{id}/skills/{skillId}','SkillController@addtodir');
+    $router->post('/skill', 'SkillController@create_array');
     //---=API SKILLS END=---
 });

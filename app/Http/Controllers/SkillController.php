@@ -49,6 +49,17 @@ class SkillController extends Controller
         }
     }
 
+    public function create_array(Request $request)
+    {
+        foreach ($request->title as $value) {
+                $new = array(
+                    'title' => $value,
+                    'image' => null,
+                );
+                $skill = Skill::create($new);
+        }
+        return response()->json($new);
+    }
     public function update($id, Request $request)
     {
         $val = $this->val_id($id);
@@ -72,13 +83,9 @@ class SkillController extends Controller
     {
         $val = $this->val_id($id);
         if(!$val['status']) return response()->json($val['body']);
-
         $skill = Skill::find($id);
-
-        $status = array_merge($skill->get(), array('status' => 'deleted'));
-
         $skill->delete();
-        return response()->json($status);
+        return response()->json('deleted');
     }
     public function dir($id)
     {
