@@ -14,15 +14,15 @@
 $router->get('/', function () use ($router) {
     return 'API v1';
 });
-	$router->group(['prefix' => 'api/v1'], function () use ($router) {
+	//$router->group(['prefix' => 'api/v1'], function () use ($router) {
 	
         //--=API MATERIALS START=--
     $router->get('material', 'MaterialController@get');
     $router->post('material', 'MaterialController@create');
-	  $router->get('material/{id}', 'MaterialController@getspecific');
-	  $router->put('material/{id}', 'MaterialController@update');
-	  $router->get('skill/{id}/materials', 'MaterialController@getBySkill');
-	  $router->delete('material/{id}', 'MaterialController@delete');
+	$router->get('material/{id}', 'MaterialController@getspecific');
+	$router->put('material/{id}', 'MaterialController@update');
+	$router->get('skill/{id}/materials', 'MaterialController@getBySkill');
+	$router->delete('material/{id}', 'MaterialController@delete');
 	      //---=API MATERIALS END=---
 	
         //--=API DIR START=--
@@ -44,5 +44,16 @@ $router->get('/', function () use ($router) {
     $router->get('/directions/{id}/skills','SkillController@dir');
     $router->post('/directions/{id}/skills/{skillId}','SkillController@addtodir');
         //---=API SKILLS END=---
-});
+
+        //---=API STOP_WORDS START=---
+    $router->get('/stop_word', 'StopWordController@all');
+    $router->get('/stop_word/{id}','StopWordController@showone');
+    $router->post('/stop_word', 'StopWordController@create');
+    //$router->post('/stop_word_array', 'StopWordController@create_array');
+    $router->put('/stop_word/{id}','StopWordController@update');
+    $router->delete('/stop_word','StopWordController@del_all');
+    $router->delete('/stop_word/{id}','StopWordController@delete');
+            //---=API STOP_WORDS END=---
+
+//});
 
