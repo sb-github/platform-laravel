@@ -42,11 +42,12 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
 
     //--=API SKILL START=--
     $router->get('/skills', 'SkillController@all');
-    $router->post('/skills', 'SkillController@create');
+    $router->post('/skill', 'SkillController@create');
     $router->put('/skills/{id}','SkillController@update');
     $router->get('/skills/{id}','SkillController@showone');
     $router->delete('/skills/{id}','SkillController@delete');
     $router->get('/directions/{id}/skills','SkillController@dir');
     $router->post('/directions/{id}/skills/{skillId}','SkillController@addtodir');
+    $router->post('/skills', 'SkillController@create_array');
     //---=API SKILLS END=---
 });
