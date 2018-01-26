@@ -34,13 +34,9 @@ class StopWordController extends Controller
            $validator = $this->validator($value);
 
             if(!$validator->fails()) {
-                $new = array(
-                    'title' => $value
-                );
-                $stop_word = StopWord::create($new);
-                $new = array_merge($new, array('status' => 'created'));
-                
-            }else {
+                $stop_word = StopWord::create($value);
+            }
+            else {
                 $errors = $validator->errors();
                 return response()->json($errors->all());
             }
