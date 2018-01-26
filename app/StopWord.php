@@ -11,6 +11,4 @@ class StopWord extends Model
     protected $fillable = [
         'title'
     ];
-
-    protected $hidden = array('pivot');
 }
