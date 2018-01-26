@@ -38,15 +38,16 @@ class MaterialController extends Controller
             
             if($request->has('text')) {
                 $new['text'] = $request->text;
-
-                $skill = Skill::find($new['skill_id']);          
-                if(empty($skill)) {
-                    $messages = array(
-                        'status' => 'Skill not found.'
-                    );
-                    return response()->json($messages);
-                }
             }
+                
+            $skill = Skill::find($new['skill_id']);          
+            if(empty($skill)) {
+                $messages = array(
+                    'status' => 'Skill not found.'
+                );
+                return response()->json($messages);
+            }
+            
             
             $item = Material::create($new);
             $new = array_merge($new, array('status' => 'created'));
