@@ -91,7 +91,7 @@ class StopWordController extends Controller
     public function validator($request)
     {
         $rules =  array(
-            'title' => 'required|max:60',
+            'title' => 'required|max:60|unique',
         );
 
         return \Validator::make(
