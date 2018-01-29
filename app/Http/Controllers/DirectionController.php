@@ -50,7 +50,7 @@ class DirectionController extends Controller
 			}
 			
 			$dir = Direction::create($new);
-			return response()->json(['status' => "Item created.", 'item' => $new);
+			return response()->json(['status' => "Item created.", 'item' => $new]);
 		} else {
 			$errors = $validator->errors();
             return response()->json($errors->all());
@@ -90,7 +90,7 @@ class DirectionController extends Controller
 			}
 
 			$dir->save();
-			return response()->json(['status' => "Item updated.", 'item' => $dir);
+			return response()->json(['status' => "Item updated.", 'item' => $dir]);
 			
 		} else {
 			$errors = $validator->errors();
@@ -107,7 +107,7 @@ class DirectionController extends Controller
 		
 		$dir->delete();
 		
-		return response()->json(['status' => "Item deleted.", 'item' => $dir);
+		return response()->json(['status' => "Item deleted.", 'item' => $dir]);
 	}
 	
 	public function subdir($id)
@@ -136,7 +136,7 @@ class DirectionController extends Controller
 			
 			$subdir = Direction::create($sub);
 			
-			return response()->json(['status' => "Subitem created.", 'item' => $subdir);
+			return response()->json(['status' => "Subitem created.", 'item' => $subdir]);
 		
 		} else {
 			$errors = $validator->errors();
