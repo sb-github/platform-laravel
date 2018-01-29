@@ -50,8 +50,7 @@ class DirectionController extends Controller
 			}
 			
 			$dir = Direction::create($new);
-            $new = array_merge($new, array('status' => 'created'));
-            return response()->json($new);
+			return response()->json(['status' => "Item created.", 'item' => $new]);
 		} else {
 			$errors = $validator->errors();
             return response()->json($errors->all());
@@ -91,8 +90,7 @@ class DirectionController extends Controller
 			}
 
 			$dir->save();
-			$status = array_merge($request->all(), array('status' => 'updated'));
-			return response()->json($status);
+			return response()->json(['status' => "Item updated.", 'item' => $dir]);
 			
 		} else {
 			$errors = $validator->errors();
@@ -107,10 +105,9 @@ class DirectionController extends Controller
 		
 		$dir = Direction::find($id);
 		
-		$status = array_merge($dir->get(), array('status' => 'deleted'));
 		$dir->delete();
 		
-		return response()->json($status);
+		return response()->json(['status' => "Item deleted.", 'item' => $dir]);
 	}
 	
 	public function subdir($id)
@@ -139,8 +136,7 @@ class DirectionController extends Controller
 			
 			$subdir = Direction::create($sub);
 			
-			$status = array_merge($sub, array('status' => 'subdir created'));
-			return response()->json($status);
+			return response()->json(['status' => "Subitem created.", 'item' => $subdir]);
 		
 		} else {
 			$errors = $validator->errors();
