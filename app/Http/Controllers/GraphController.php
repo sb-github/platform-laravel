@@ -8,39 +8,56 @@ use GuzzleHttp;
 use Illuminate\Http\Request;
 use Validator;
 
-class CrawlerController extends Controller
+class GraphController extends Controller
 {
+    function prepareArray($array, $key)
+    {
+        $result = array_column($array, $key);
+        $result = array_unique($result);
+        asort($result);
+
+        return $result;
+    }
+
     function filterResult($data)
     {
         $result = Skill::select('title')
             ->get()
             ->toArray();
-
-        $skills = array_column($result, 'title');
-        $skills = array_unique($skills);
-        asort($skills);
+        $skills = $this->prepareArray($result, 'title');
 
         $result = StopWord::select('title')
             ->get()
             ->toArray();
-
-        $stopWords = array_column($result, 'title');
-        $stopWords = array_unique($stopWords);
-        asort($stopWords);
-
+        $stopWords = $this->prepareArray($result, 'title');
 
         foreach ($data as $node)
         {
-            $words = array_column($node->connects, 'subSkill');
-            $words = array_unique($words);
-            asort($words);
+            $words = $this->prepareArray($node->connects, 'subSkill');
+            $node->tag = count(array_intersect([$node->skill], $skills)) == 0
+                ? count(array_intersect([$node->skill], $stopWords)) == 0
+                    ? 'new'
+                    : 'stopword'
+                : 'skill';
+            $count = 0;
 
-            foreach (array_intersect($words, $skills) as $key => $word)
-                $node->connects[$key]->type = 'skill';
+            foreach (array_diff($words, $skills) as $key => $word)
+                $node->connects[$key]->tag = 'new';
 
+            foreach (array_diff($words, $stopWords) as $key => $word)
+                $node->connects[$key]->tag = 'new';
 
-            foreach (array_intersect($words, $stopWords) as $key => $word)
-                $node->connects[$key]->type = 'stop word';
+            foreach (array_intersect($words, $skills) as $key => $word) {
+                $node->connects[$key]->tag = 'skill';
+                $count++;
+            }
+
+            foreach (array_intersect($words, $stopWords) as $key => $word) {
+                $node->connects[$key]->tag = 'stopword';
+                $count++;
+            }
+
+            $node->new = count($node->connects) - $count;
         }
 
         return $data;
@@ -72,17 +89,13 @@ class CrawlerController extends Controller
             $errors = $validator->errors();
             return response()->json($errors->all());
         }
-
-
-
-
     }
 
     public function validator($request)
     {
         $rules =  array(
             'page' => 'nullable|integer',
-            'crawler_id' => 'required|integer'
+            'crawler_id' => 'required'
         );
 
         return \Validator::make([
