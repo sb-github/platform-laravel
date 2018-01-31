@@ -19,9 +19,10 @@ class DirectionController extends Controller
         //
     }
 	
-	public function get()
+	public function get(Request $request)
 	{	
-		return response()->json(Direction::all());
+		if($request->input('relationships') == 'true') return response()->json(Direction::with('skills', 'subdirections')->where('parent', null)->get());
+		else return response()->json(Direction::where('parent', null)->get());
 	}
 	
 	public function create(Request $request)
