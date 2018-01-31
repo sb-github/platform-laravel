@@ -67,7 +67,7 @@ class GraphController extends Controller
     {
         $client = new GuzzleHttp\Client();
 
-        $route = 'http://localhost:3001/api/extractor/graphskill'.'?crawler_id=' . $idCrawler . '&page=' . $page;
+        $route = env('EXTRACTOR_API') . '?crawler_id=' . $idCrawler . '&page=' . $page;
         $res = $client->get($route);
 
         return json_decode($res->getBody());
@@ -103,4 +103,5 @@ class GraphController extends Controller
             'crawler_id' => $request->input('crawler_id')
         ], $rules);
     }
+
 }
