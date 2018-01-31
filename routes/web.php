@@ -61,4 +61,5 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
     //---=API STOP_WORDS END=--- 
     $router->post('/skills', 'SkillController@create_array');
     //---=API SKILLS END=---
+    $router->get('/graphskill', 'GraphController@getGraphSkill');
 });
