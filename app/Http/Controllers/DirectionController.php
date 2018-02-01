@@ -92,7 +92,7 @@ class DirectionController extends Controller
 				}
 				
 				$dir->parent = $request->parent;
-			}
+			} else $dir->parent = null;
 
 			$dir->save();
 			return response()->json(['status' => "Item updated.", 'item' => $dir]);
