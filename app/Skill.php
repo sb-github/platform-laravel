@@ -15,7 +15,9 @@ class Skill extends Model
 
     protected $fillable = [
         'title',
-        'image'
+        'image',
+        'difficulty',
+        'description'
     ];
 
     protected $hidden = array('pivot');
