@@ -36,12 +36,10 @@ class SkillController extends Controller
             $new = array(
                 'title' => $request->title,
                 'image' => null,
-                'difficulty' => null,
                 'description' => null,
             );
 
             if($request->has('image')) $new['image'] = $request->image;
-            if($request->has('difficulty')) $new['difficulty'] = $request->difficulty;
             if($request->has('description')) $new['description'] = $request->description;
 
             $skill = Skill::create($new);
@@ -75,7 +73,6 @@ class SkillController extends Controller
             $skill = Skill::find($id);
             $skill->title = $request->input('title');
             $skill->image = $request->input('image');
-            $skill->difficulty = $request->input('difficulty');
             $skill->description = $request->input('description');
             $skill->save();
             $status = array_merge($request->all(), array('status' => 'updated'));
@@ -117,13 +114,11 @@ class SkillController extends Controller
         $rules =  array(
             'title' => 'required|max:60',
             'image' => 'nullable|image',
-            'difficulty' => 'nullable|max:60',
             'description' => 'nullable|max:60'
         );
 
         return \Validator::make(array('title' => $request->input('title'),
             'image' => $request->input('image'),
-            'difficulty' => $request->input('difficulty'),
             'description' => $request->input('description')), $rules);
     }
     public function val_id($id)
