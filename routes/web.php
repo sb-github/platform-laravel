@@ -17,18 +17,18 @@ $router->get('/', function () use ($router) {
 });
 $router->group(['prefix' => 'api/v1'], function () use ($router) {
 
-	//--=Merge skill API=--
+	  //--=Merge skill API=--
     $router->post('/merge/{requestedSkill}','MergeController@merge');
     //--=Merge skill API=--
 
     //--=API MATERIALS START=--
     $router->get('material', 'MaterialController@get');
     $router->post('material', 'MaterialController@create');
-	$router->get('material/{id}', 'MaterialController@getspecific');
-	$router->put('material/{id}', 'MaterialController@update');
-	$router->get('skill/{id}/materials', 'MaterialController@getBySkill');
-	$router->delete('material/{id}', 'MaterialController@delete');
-	//---=API MATERIALS END=---
+	  $router->get('material/{id}', 'MaterialController@getspecific');
+	  $router->put('material/{id}', 'MaterialController@update');
+	  $router->get('skill/{id}/materials', 'MaterialController@getBySkill');
+	  $router->delete('material/{id}', 'MaterialController@delete');
+	  //---=API MATERIALS END=---
 	
     //--=API DIR START=--
     $router->get('directions', 'DirectionController@get');
@@ -48,6 +48,18 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
     $router->delete('/skills/{id}','SkillController@delete');
     $router->get('/directions/{id}/skills','SkillController@dir');
     $router->post('/directions/{id}/skills/{skillId}','SkillController@addtodir');
+    //---=API SKILLS END=---
+
+    //---=API STOP_WORDS START=---
+    $router->get('/stop_word', 'StopWordController@all');
+    $router->get('/stop_word/{id}','StopWordController@showone');
+    $router->post('/stop_word', 'StopWordController@create');
+    $router->put('/stop_word/{id}','StopWordController@update');
+    $router->delete('/stop_word','StopWordController@del_all');
+    $router->delete('/stop_word/{id}','StopWordController@delete');
+           
+    //---=API STOP_WORDS END=--- 
     $router->post('/skills', 'SkillController@create_array');
     //---=API SKILLS END=---
+    $router->get('/graphskill', 'GraphController@getGraphSkill');
 });
