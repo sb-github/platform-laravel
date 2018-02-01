@@ -96,14 +96,35 @@ class SkillController extends Controller
         if(!$val['status']) return response()->json($val['body']);
 
         $dir = Direction::find($id);
-        return response()->json($val['body']);
+        return response()->json($dir->skills);
     }
+    public function addSkillAndDir($id, Request $request)
+    {
+        $val = $this->dir_val_id($id);
+        $validator = $this->validator($request);
+        if(!$validator->fails()) {
+            $new = array(
+                'title' => $request->title,
+                'image' => null,
+                'description' => null,
+            );
+        }
+            if($request->has('image')) $new['image'] = $request->image;
+            if($request->has('description')) $new['description'] = $request->description;
+            $skill = Skill::create($new);
+
+
+
+        $direction= Direction::find($id);
+        $direction->skills()->attach($skill);
+        return response()->json($direction);
+    }
+
     public function addtodir($id, $skillId)
     {
         $val = $this->dir_val_id($id);
         $val2 = $this->val_id($skillId);
         if(!$val['status'] && !$val2['status']) return response()->json($val , $val2);
-
         $direction= Direction::find($id);
         $direction->skills()->attach($skillId);
         return response()->json($direction);
