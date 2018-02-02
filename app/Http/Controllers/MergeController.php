@@ -84,8 +84,9 @@ class MergeController extends Controller
     public function callAPI($crawler,$requestedSkill, $skills)
     {
         $client = new GuzzleHttp\Client();
+        $route = env('EXTRACTOR_API') . env('MERGE_GRAPH_API') . $requestedSkill;
 
-        $res = $client->post('localhost:3001/api/graph/' . $requestedSkill, [
+        $res = $client->post($route, [
             GuzzleHttp\RequestOptions::JSON => [
                 'crawler_id' => $crawler,
                 'skills' => $skills

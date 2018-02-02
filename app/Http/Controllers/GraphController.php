@@ -66,8 +66,9 @@ class GraphController extends Controller
     function callAPI($idCrawler, $page)
     {
         $client = new GuzzleHttp\Client();
+        $route = env('EXTRACTOR_API') . env('GRAPH_API')
+            . '?crawler_id=' . $idCrawler . '&page=' . $page;
 
-        $route = env('EXTRACTOR_API') . '?crawler_id=' . $idCrawler . '&page=' . $page;
         $res = $client->get($route);
 
         return json_decode($res->getBody());
