@@ -21,8 +21,8 @@ $router->group(['middleware' => 'guest'], function () use ($router) {
     $router->post('/reg','UserController@register');
 });
 
-$router->group(['middleware' => 'admin'], function () use ($router) {
-
+$router->group(['prefix' => 'admin', 'middleware' => 'admin'], function () use ($router) {
+    $router->get('activate/{id}', 'AdminController@activate');
 });
 
 $router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use ($router) {
