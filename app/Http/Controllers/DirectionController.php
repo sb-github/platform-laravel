@@ -17,7 +17,7 @@ class DirectionController extends Controller
      */
 	public function get(Request $request)
 	{	
-		if($request->input('relationships') == 'true') return response()->json(Direction::with('skills', 'subdirections')->where('parent', null)->get());
+		if($request->input('relationships') == 'true') return response()->json(Direction::with('subdirections')->where('parent', null)->get());
 		else return response()->json(Direction::where('parent', null)->get());
 	}
 	
@@ -54,10 +54,14 @@ class DirectionController extends Controller
 		}
 	}
 	
-	public function getspecific($id)
+	public function getspecific(Request $request, $id)
 	{   
         $val = $this->val_id($id);
-		return response()->json($val['body']);
+
+        if(!$val['status']) return response()->json($val['body']);
+
+        if($request->input('relationships') == 'true') return Direction::with('subdirections')->where('id', $id)->get();
+        else return response()->json($val['body']);
 	}
 	
 	public function update($id, Request $request)
@@ -84,7 +88,7 @@ class DirectionController extends Controller
 				}
 				
 				$dir->parent = $request->parent;
-			}
+			} else $dir->parent = null;
 
 			$dir->save();
 			return response()->json(['status' => "Item updated.", 'item' => $dir]);
@@ -112,7 +116,7 @@ class DirectionController extends Controller
 		$val = $this->val_id($id);
 		if(!$val['status']) return response()->json($val['body']);
 		
-		$sub = Direction::where('parent', $id)->get();
+		$sub = Direction::with('skills')->where('parent', $id)->get();
 		return response()->json($sub);
 	}
 	

@@ -19,7 +19,7 @@ class SkillController extends Controller
      */
     public function all()
     {
-            return response()->json(Skill::all());
+        return response()->json(Skill::all());
     }
 
     public function showone($id)
@@ -36,9 +36,11 @@ class SkillController extends Controller
             $new = array(
                 'title' => $request->title,
                 'image' => null,
+                'description' => null,
             );
 
             if($request->has('image')) $new['image'] = $request->image;
+            if($request->has('description')) $new['description'] = $request->description;
 
             $skill = Skill::create($new);
             $new = array_merge($new, array('status' => 'created'));
@@ -52,11 +54,11 @@ class SkillController extends Controller
     public function create_array(Request $request)
     {
         foreach ($request->title as $value) {
-                $new = array(
-                    'title' => $value,
-                    'image' => null,
-                );
-                $skill = Skill::create($new);
+            $new = array(
+                'title' => $value,
+                'image' => null,
+            );
+            $skill = Skill::create($new);
         }
         return response()->json($new);
     }
@@ -71,6 +73,7 @@ class SkillController extends Controller
             $skill = Skill::find($id);
             $skill->title = $request->input('title');
             $skill->image = $request->input('image');
+            $skill->description = $request->input('description');
             $skill->save();
             $status = array_merge($request->all(), array('status' => 'updated'));
             return response()->json($status);
@@ -93,14 +96,35 @@ class SkillController extends Controller
         if(!$val['status']) return response()->json($val['body']);
 
         $dir = Direction::find($id);
-        return response()->json($val['body']);
+        return response()->json($dir->skills);
     }
+    public function addSkillAndDir($id, Request $request)
+    {
+        $val = $this->dir_val_id($id);
+        $validator = $this->validator($request);
+        if(!$validator->fails()) {
+            $new = array(
+                'title' => $request->title,
+                'image' => null,
+                'description' => null,
+            );
+        }
+            if($request->has('image')) $new['image'] = $request->image;
+            if($request->has('description')) $new['description'] = $request->description;
+            $skill = Skill::create($new);
+
+
+
+        $direction= Direction::find($id);
+        $direction->skills()->attach($skill);
+        return response()->json($direction);
+    }
+
     public function addtodir($id, $skillId)
     {
         $val = $this->dir_val_id($id);
         $val2 = $this->val_id($skillId);
         if(!$val['status'] && !$val2['status']) return response()->json($val , $val2);
-
         $direction= Direction::find($id);
         $direction->skills()->attach($skillId);
         return response()->json($direction);
@@ -111,9 +135,12 @@ class SkillController extends Controller
         $rules =  array(
             'title' => 'required|max:60',
             'image' => 'nullable|image',
+            'description' => 'nullable|max:60'
         );
 
-        return \Validator::make(array('title' => $request->input('title'), 'image' => $request->input('image')), $rules);
+        return \Validator::make(array('title' => $request->input('title'),
+            'image' => $request->input('image'),
+            'description' => $request->input('description')), $rules);
     }
     public function val_id($id)
     {

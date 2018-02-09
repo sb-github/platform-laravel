@@ -56,8 +56,9 @@ $router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use (
     $router->put('/skills/{id}','SkillController@update');
     $router->get('/skills/{id}','SkillController@showone');
     $router->delete('/skills/{id}','SkillController@delete');
-    $router->get('/directions/{id}/skills','SkillController@dir');
-    $router->post('/directions/{id}/skills/{skillId}','SkillController@addtodir');
+    $router->get('/directions/{id}/skill','SkillController@dir');
+    $router->post('/directions/{id}/skill','SkillController@addSkillAndDir');
+    $router->post('/directions/{id}/skill/{skillId}','SkillController@addtodir');
     //---=API SKILLS END=---
 
     //---=API STOP_WORDS START=---

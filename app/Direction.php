@@ -8,7 +8,7 @@ class Direction extends Model
 {
 	protected $table = 'directions';
 	
-	protected $hidden = array('pivot', 'parent');
+	protected $hidden = array('pivot');
 	
     protected $fillable = [
         'title',
