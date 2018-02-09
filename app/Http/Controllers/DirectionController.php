@@ -6,6 +6,7 @@ use \App\Direction;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Validator;
+use Auth;
 
 class DirectionController extends Controller
 {
@@ -14,11 +15,6 @@ class DirectionController extends Controller
      *
      * @return void
      */
-    public function __construct()
-    {
-        //
-    }
-	
 	public function get(Request $request)
 	{	
 		if($request->input('relationships') == 'true') return response()->json(Direction::with('skills', 'subdirections')->where('parent', null)->get());

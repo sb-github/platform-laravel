@@ -9,7 +9,8 @@
         "laravel/lumen-framework": "5.5.*",
         "vlucas/phpdotenv": "~2.2",
         "guzzlehttp/guzzle": "^6.3",
-        "palanik/lumen-cors": "dev-master"
+        "palanik/lumen-cors": "dev-master",
+        "flipbox/lumen-generator": "^5.5"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

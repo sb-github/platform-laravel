@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Contracts\Auth\Factory as Auth;
 
-class Authenticate
+class Admin
 {
     protected $auth;
 
@@ -16,10 +16,10 @@ class Authenticate
 
     public function handle($request, Closure $next, $guard = null)
     {
-        if ($this->auth->guard($guard)->guest()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        if ($this->auth->user()->status == 4) {
+            return $next($request);
         }
 
-        return $next($request);
+        return response()->json(['error' => 'Method Not Allowed'], 403);
     }
 }

@@ -15,7 +15,17 @@ $router->get('/', function () use ($router) {
 
     return 'API v1';
 });
-$router->group(['prefix' => 'api/v1'], function () use ($router) {
+
+$router->group(['middleware' => 'guest'], function () use ($router) {
+    $router->post('/login','UserController@authenticate');
+    $router->post('/reg','UserController@register');
+});
+
+$router->group(['middleware' => 'admin'], function () use ($router) {
+
+});
+
+$router->group(['prefix' => 'api/v1', 'middleware' => 'auth'], function () use ($router) {
 
 	  //--=Merge skill API=--
     $router->post('/merge/{requestedSkill}','MergeController@merge');
