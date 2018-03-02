@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class StopWord extends Model
 {
-    protected $table = 'stop_words';
+    protected $table = 'stopword';
 
     protected $fillable = [
-        'title'
+        'title',
+        'crawler_id'
     ];
 }

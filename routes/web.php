@@ -52,12 +52,14 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
     //---=API SKILLS END=---
 
     //---=API STOP_WORDS START=---
-    $router->get('/stop_word', 'StopWordController@all');
-    $router->get('/stop_word/{id}','StopWordController@showone');
-    $router->post('/stop_word', 'StopWordController@create');
-    $router->put('/stop_word/{id}','StopWordController@update');
-    $router->delete('/stop_word','StopWordController@del_all');
-    $router->delete('/stop_word/{id}','StopWordController@delete');
+    $router->get('/stopword', 'StopWordController@all');
+    $router->get('/stopword/{id}','StopWordController@showone');
+    $router->get('/crawler/{id}/stopword','StopWordController@showByCrawler');
+    $router->post('/stopword', 'StopWordController@create');
+    $router->put('/stopword/{id}','StopWordController@update');
+    $router->delete('/stopword','StopWordController@del_all');
+    $router->delete('/stopword/{id}','StopWordController@delete');
+    $router->delete('/crawler/{id}/stopword','StopWordController@deleteByCrawler');
            
     //---=API STOP_WORDS END=--- 
     $router->post('/skills', 'SkillController@create_array');

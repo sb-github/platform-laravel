@@ -138,9 +138,12 @@ class SkillController extends Controller
             'description' => 'nullable|max:60'
         );
 
-        return \Validator::make(array('title' => $request->input('title'),
+        return \Validator::make(
+            array(
+            'title' => $request->input('title'),
             'image' => $request->input('image'),
-            'description' => $request->input('description')), $rules);
+            'description' => $request->input('description')
+            ), $rules);
     }
     public function val_id($id)
     {
