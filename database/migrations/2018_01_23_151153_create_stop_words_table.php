@@ -13,9 +13,10 @@ class CreateStopWordsTable extends Migration
      */
     public function up()
     {
-        Schema::create('stop_words', function (Blueprint $table) {
+        Schema::create('stopword', function (Blueprint $table) {
             $table->increments('id');
             $table->string('title');
+            $table->integer('crawler_id');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ class CreateStopWordsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('stop_words');
+        Schema::dropIfExists('stopword');
     }
 }
