@@ -95,7 +95,9 @@ class StopWordController extends Controller
         $val = $this->val_craw($id);
         if(!$val['status']) return response()->json($val['body']);
 
-        $item = StopWord::where(['crawler_id', $id])
+        $item = StopWord::where([
+            ['crawler_id', $id]
+            ])
             ->take(200);
         $item->delete();
 
