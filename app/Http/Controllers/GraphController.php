@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\GraphSkill;
 use App\Skill;
 use App\StopWord;
 use GuzzleHttp;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use stdClass;
 use Validator;
 
 class GraphController extends Controller
@@ -74,7 +77,7 @@ class GraphController extends Controller
         return json_decode($res->getBody());
     }
 
-    function getGraphSkill(Request $request)
+    function getCrawlerResult(Request $request)
     {
         $validator = $this->validator($request);
 
@@ -88,8 +91,112 @@ class GraphController extends Controller
             return response()->json($result);
         } else {
             $errors = $validator->errors();
-            return response()->json($errors->all());
+            return response([
+                'status' => 'error',
+                'message' => $errors->all()[0]
+            ],400);
         }
+    }
+
+    function createNode($skillId)
+    {
+        $skill = Skill::select('id', 'title as label', 'image')
+            ->where('id', $skillId)
+            ->first();
+
+        if($skill){
+            $skillWeight = DB::table('graph_skill as gs')
+                ->join('graph_skill_vacancies as gsv', 'gs.id', '=', 'gsv.graph_skill_id')
+                ->select(DB::raw('COUNT(DISTINCT gsv.vacancy_id) as weight'))
+                ->where('gs.parent_skill', $skillId)
+                ->orWhere('gs.related_skill', $skillId)
+                ->get()->toArray()[0]->weight;
+
+            $node = $skill->toArray();
+            $node['value'] = $skillWeight;
+
+            return $node;
+        }
+
+        return false;
+    }
+
+    function createEdge($relation, $skillId)
+    {
+        $edge = [];
+
+        $edge['id'] = $relation->id;
+        $edge['from'] = $skillId;
+        $edge['to'] = $relation->parent_skill != $skillId
+            ? $relation->parent_skill
+            : $relation->related_skill;
+        $edge['value'] = $relation->weight;
+
+        return $edge;
+    }
+
+    function skillExists($id, $skill)
+    {
+        if(isset($id) || isset($skill)){
+
+            $result = Skill::select('id')
+                ->where('title', $skill)
+                ->orWhere('id', $id)
+                ->first();
+
+            if($result)
+                return $result->toArray()['id'];
+        }
+
+        return false;
+    }
+
+    function getGraphSkill(Request $request)
+    {
+        $skill = $this->skillExists(
+            $request->input('skill_id'),
+            $request->input('skill')
+        );
+
+        if($skill)
+        {
+            $graph = [];
+
+            $relations = GraphSkill::select('id', 'parent_skill', 'related_skill', 'weight')
+                ->where('parent_skill', $skill)
+                ->orWhere('related_skill', $skill)
+                ->get()->toJson();
+            $node = $this->createNode($skill);
+            if($node)
+                $graph['nodes'][] = $node;
+
+            foreach (json_decode($relations) as $relation)
+            {
+                $edge = $this->createEdge($relation, $skill);
+                $node = $this->createNode($edge['to']);
+
+                $graph['edges'][] = $edge;
+                if($node)
+                    $graph['nodes'][] = $node;
+            }
+
+            return response()->json($graph);
+        }
+
+        return response([
+            'status' => 'error',
+            'message' => 'Skill not found'
+        ],400);
+    }
+
+    function getSkills(Request $request) {
+        $skill = $request->input('skill');
+
+        $result = Skill::select('title', 'image')
+            ->where('title','like', '%'.$skill.'%')
+            ->get()->toArray();
+
+        return response()->json($result);
     }
 
     public function validator($request)
