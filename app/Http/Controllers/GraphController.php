@@ -189,6 +189,16 @@ class GraphController extends Controller
         ],400);
     }
 
+    function getSkills(Request $request) {
+        $skill = $request->input('skill');
+
+        $result = Skill::select('title', 'image')
+            ->where('title','like', '%'.$skill.'%')
+            ->get()->toArray();
+
+        return response()->json($result);
+    }
+
     public function validator($request)
     {
         $rules =  array(
