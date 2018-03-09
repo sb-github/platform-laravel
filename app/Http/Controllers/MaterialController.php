@@ -55,8 +55,7 @@ class MaterialController extends Controller
             
             
             $item = Material::create($new);
-            $new = array_merge($new, array('status' => 'created'));
-            return response()->json($new);
+            return response()->json(['status' => 'created', 'item' => $item]);
         } else {
             $errors = $validator->errors();
             return response()->json($errors->all());
@@ -82,7 +81,7 @@ class MaterialController extends Controller
             $item = Material::find($id);
             $item->text = $request->input('text');
             $item->title = $request->input('title');
-            
+            $item->id = $id;
             if($request->has('skill_id')) {
                 $skill = Skill::find($request->skill_id);
                     
@@ -97,8 +96,7 @@ class MaterialController extends Controller
             }
 
             $item->save();
-            $status = array_merge($request->all(), array('status' => 'updated'));
-            return response()->json($status);
+            return response()->json(['status' => 'updated', 'item' => $item ]);
             
         } else {
             $errors = $validator->errors();
