@@ -22,7 +22,7 @@ class DirectionController extends Controller
 	public function get(Request $request)
 	{	
 		if($request->input('relationships') == 'true') return response()->json(Direction::with('subdirections')->where('parent', null)->get());
-		else return response()->json(Direction::where('parent', null)->get());
+		else return response()->json(Direction::get());
 	}
 	
 	public function create(Request $request)
@@ -51,7 +51,7 @@ class DirectionController extends Controller
 			}
 			
 			$dir = Direction::create($new);
-			return response()->json(['status' => "Item created.", 'item' => $new]);
+			return response()->json(['status' => "Item created.", 'item' => $dir]);
 		} else {
 			$errors = $validator->errors();
             return response()->json($errors->all());
