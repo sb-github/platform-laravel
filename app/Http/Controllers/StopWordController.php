@@ -27,16 +27,23 @@ class StopWordController extends Controller
         return response()->json($val['body']);
     }
 
+    public function showByCrawler($id)
+    {
+        $val = $this->val_craw($id);
+
+        return response()->json($val['body']);
+    }
+
     public function create(Request $request)
     {
         foreach ($request->title as $value) {
-           
            $validator = $this->validator($value);
 
             if(!$validator->fails()) {
 
                 $new = array (
                     'title' => $value,
+                    'crawler_id' => $request->input('crawler_id')
                 );
                 $stop_word = StopWord::create($new);
             }
@@ -52,13 +59,16 @@ class StopWordController extends Controller
     {
         $val = $this->val_id($id);
         if(!$val['status']) return response()->json($val['body']);
+        $val = $this->val_craw( $request->input('crawler_id') );
+        if(!$val['status']) return response()->json($val['body']);
 
         $validator = $this->validator($request->title);
 
         if(!$validator->fails()) {
-            $stop_word = StopWord::find($id);
-            $stop_word->title = $request->input('title');
-            $stop_word->save();
+            $stopword = StopWord::find($id);
+            $stopword->title = $request->input('title');
+            $stopword->crawler_id = $request->input('crawler_id');
+            $stopword->save();
             $status = array_merge($request->all(), array('status' => 'updated'));
             return response()->json($status);
         }else {
@@ -69,7 +79,6 @@ class StopWordController extends Controller
 
     public function delete($id)
     {
-
         $val = $this->val_id($id);
         if(!$val['status']) return response()->json($val['body']);
         
@@ -79,6 +88,20 @@ class StopWordController extends Controller
         $item->delete();
 
         return response()->json(['status' => "Item deleted.", 'item_id' => $item_id]);
+    }
+
+    public function deleteByCrawler($id)
+    {
+        $val = $this->val_craw($id);
+        if(!$val['status']) return response()->json($val['body']);
+
+        $item = StopWord::where([
+            ['crawler_id', $id]
+            ])
+            ->take(200);
+        $item->delete();
+
+        return response()->json(['status' => "Item deleted by crawler.", 'crawler_id' => $id]);
     }
 
     public function del_all()
@@ -91,7 +114,7 @@ class StopWordController extends Controller
     public function validator($request)
     {
         $rules =  array(
-            'title' => 'required|max:60|unique:stop_words',
+            'title' => 'required|max:60|unique:stopword|size:200'
         );
 
         return \Validator::make(
@@ -107,11 +130,26 @@ class StopWordController extends Controller
             'status' => 'stop_word not found'
         );
 
-        $stop_word = StopWord::find($id);
+        $stopword = StopWord::find($id);
 
-        return (empty($stop_word))
+        return (empty($stopword))
             ? array( 'status' => false, 'body' => $messages )
-            : array( 'status' => true, 'body' => $stop_word );
+            : array( 'status' => true, 'body' => $stopword );
+    }
+
+    public function val_craw($id)
+    {
+        $messages = array(
+            'status' => 'crawler_id not found'
+        );
+        $stopword = StopWord::where([
+                ['crawler_id', $id]
+            ])
+            ->take(200)
+            ->get();
+        return (empty($stopword))
+            ? array( 'status' => false, 'body' => $messages )
+            : array( 'status' => true, 'body' => $stopword );
     }
 
 }

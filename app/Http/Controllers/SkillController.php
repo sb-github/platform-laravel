@@ -126,9 +126,9 @@ class SkillController extends Controller
 
         return \Validator::make(
             array(
-                'title' => $request->input('title'),
-                'image' => $request->input('image'),
-                'description' => $request->input('description')
+            'title' => $request->input('title'),
+            'image' => $request->input('image'),
+            'description' => $request->input('description')
             ), $rules);
     }
     public function val_id($id)
