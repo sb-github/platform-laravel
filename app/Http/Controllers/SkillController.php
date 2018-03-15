@@ -34,6 +34,7 @@ class SkillController extends Controller
             );
             if($request->has('image')) $new['image'] = $request->image;
             if($request->has('description')) $new['description'] = $request->description;
+
             $skill = Skill::create($new);
             return response()->json(['status' => 'created', 'item' => $skill]);
         }else {
@@ -96,13 +97,20 @@ class SkillController extends Controller
                 'description' => null,
             );
         }
+
         if($request->has('image')) $new['image'] = $request->image;
         if($request->has('description')) $new['description'] = $request->description;
         $skill = Skill::create($new);
+
+            if($request->has('image')) $new['image'] = $request->image;
+            if($request->has('description')) $new['description'] = $request->description;
+            $skill = Skill::create($new);
+
         $direction= Direction::find($id);
         $direction->skills()->attach($skill);
         return response()->json($direction);
     }
+
     public function addtodir($id, $skillId)
     {
         $val = $this->dir_val_id($id);
@@ -119,6 +127,7 @@ class SkillController extends Controller
             'image' => 'nullable|image',
             'description' => 'nullable|max:60'
         );
+
         return \Validator::make(
             array(
                 'title' => $request->input('title'),
