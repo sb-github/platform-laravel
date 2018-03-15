@@ -102,10 +102,6 @@ class SkillController extends Controller
         if($request->has('description')) $new['description'] = $request->description;
         $skill = Skill::create($new);
 
-            if($request->has('image')) $new['image'] = $request->image;
-            if($request->has('description')) $new['description'] = $request->description;
-            $skill = Skill::create($new);
-
         $direction= Direction::find($id);
         $direction->skills()->attach($skill);
         return response()->json($direction);
