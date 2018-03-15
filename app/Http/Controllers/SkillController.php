@@ -1,14 +1,11 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Skill;
 use App\Direction;
 use FastRoute\Route;
 use Illuminate\Http\Request;
 use Mockery\Exception;
 use Validator;
-
 class SkillController extends Controller
 {
     /**
@@ -21,36 +18,30 @@ class SkillController extends Controller
     {
         return response()->json(Skill::all());
     }
-
     public function showone($id)
     {
         $val = $this->val_id($id);
         return response()->json($val['body']);
     }
-
     public function create(Request $request)
     {
         $validator = $this->validator($request);
-
         if(!$validator->fails()) {
             $new = array(
                 'title' => $request->title,
                 'image' => null,
                 'description' => null,
             );
-
             if($request->has('image')) $new['image'] = $request->image;
             if($request->has('description')) $new['description'] = $request->description;
 
             $skill = Skill::create($new);
-            $new = array_merge($new, array('status' => 'created'));
-            return response()->json($new);
+            return response()->json(['status' => 'created', 'item' => $skill]);
         }else {
             $errors = $validator->errors();
             return response()->json($errors->all());
         }
     }
-
     public function create_array(Request $request)
     {
         foreach ($request->title as $value) {
@@ -60,23 +51,21 @@ class SkillController extends Controller
             );
             $skill = Skill::create($new);
         }
-        return response()->json($new);
+        return response()->json($skill);
     }
     public function update($id, Request $request)
     {
         $val = $this->val_id($id);
         if(!$val['status']) return response()->json($val['body']);
-
         $validator = $this->validator($request);
-
         if(!$validator->fails()) {
             $skill = Skill::find($id);
+            $skill->id = $id;
             $skill->title = $request->input('title');
             $skill->image = $request->input('image');
             $skill->description = $request->input('description');
             $skill->save();
-            $status = array_merge($request->all(), array('status' => 'updated'));
-            return response()->json($status);
+            return response()->json(['status' => 'updated', 'item' => $skill]);
         }else {
             $errors = $validator->errors();
             return response()->json($errors->all());
@@ -94,7 +83,6 @@ class SkillController extends Controller
     {
         $val = $this->dir_val_id($id);
         if(!$val['status']) return response()->json($val['body']);
-
         $dir = Direction::find($id);
         return response()->json($dir->skills);
     }
@@ -109,11 +97,10 @@ class SkillController extends Controller
                 'description' => null,
             );
         }
-            if($request->has('image')) $new['image'] = $request->image;
-            if($request->has('description')) $new['description'] = $request->description;
-            $skill = Skill::create($new);
 
-
+        if($request->has('image')) $new['image'] = $request->image;
+        if($request->has('description')) $new['description'] = $request->description;
+        $skill = Skill::create($new);
 
         $direction= Direction::find($id);
         $direction->skills()->attach($skill);
@@ -129,7 +116,6 @@ class SkillController extends Controller
         $direction->skills()->attach($skillId);
         return response()->json($direction);
     }
-
     public function validator($request)
     {
         $rules =  array(
@@ -138,18 +124,19 @@ class SkillController extends Controller
             'description' => 'nullable|max:60'
         );
 
-        return \Validator::make(array('title' => $request->input('title'),
-            'image' => $request->input('image'),
-            'description' => $request->input('description')), $rules);
+        return \Validator::make(
+            array(
+                'title' => $request->input('title'),
+                'image' => $request->input('image'),
+                'description' => $request->input('description')
+            ), $rules);
     }
     public function val_id($id)
     {
         $messages = array(
             'status' => 'skill not found'
         );
-
         $skill = Skill::find($id);
-
         return (empty($skill))
             ? array( 'status' => false, 'body' => $messages )
             : array( 'status' => true, 'body' => $skill );
@@ -159,9 +146,7 @@ class SkillController extends Controller
         $messages = array(
             'status' => 'direction not found'
         );
-
         $dir = Direction::find($id);
-
         return (empty($dir))
             ? array( 'status' => false, 'body' => $messages )
             : array( 'status' => true, 'body' => $dir );
