@@ -11,7 +11,8 @@ class Direction extends Model
     protected $fillable = [
         'title',
         'image',
-        'parent'
+        'parent',
+        'main_skill_id'
     ];
 
     public function skills()
