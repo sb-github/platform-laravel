@@ -158,13 +158,20 @@ class GraphController extends Controller
             $request->input('skill')
         );
 
+        $page = $request->input('page');
+        $count = $request->input('count');
+        $page = !$page ? 1 : $page;
+        $count = !$count ? 10 : $count;
+
         if($skill)
         {
             $graph = [];
 
             $relations = GraphSkill::select('id', 'parent_skill', 'related_skill', 'weight')
+                ->orderBy('weight', 'desc')
                 ->where('parent_skill', $skill)
                 ->orWhere('related_skill', $skill)
+                ->skip(($page-1) * $count)->take($count)
                 ->get()->toJson();
             $node = $this->createNode($skill);
             if($node)
