@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use \App\Direction;
+use \App\Skill;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Validator;
@@ -76,6 +77,18 @@ class DirectionController extends Controller
             $dir->id = $id;
             $dir->title = $request->input('title');
             $dir->image = $request->input('image');
+
+            if($request->has('main_skill_id')) {
+                $main_skill = Skill::find($request->main_skill_id);
+
+                if(empty($main_skill)) {
+                    $messages = array(
+                      'status' => 'Skill not found.'
+                    );
+                    return response()->json($messages);
+                }
+                $dir->main_skill_id = $request->input('main_skill_id');
+            } else $dir->main_skill_id = null;
 
             if($request->has('parent')) {
                 $dirparent = Direction::find($request->parent);

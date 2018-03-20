@@ -17,6 +17,7 @@ class CreateDirectionsTable extends Migration
             $table->increments('id');
 			$table->string('title');
             $table->string('image')->nullable();
+            $table->integer('main_skill_id')->nullable();
 			$table->integer('parent')->nullable();
             $table->timestamps();
         });
