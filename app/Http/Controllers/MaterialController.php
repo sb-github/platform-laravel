@@ -22,7 +22,12 @@ class MaterialController extends Controller
 
     public function get()
     {    
-            return response()->json(Material::all());
+        $materials = Material::all();
+        foreach($materials as $material)
+        {
+            $material->skill_title = $material->skill->title;
+        }
+        return response()->json($materials);
     }
     
     public function create(Request $request)

@@ -46,20 +46,26 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
     $router->put('/skills/{id}','SkillController@update');
     $router->get('/skills/{id}','SkillController@showone');
     $router->delete('/skills/{id}','SkillController@delete');
-    $router->get('/directions/{id}/skills','SkillController@dir');
-    $router->post('/directions/{id}/skills/{skillId}','SkillController@addtodir');
+    $router->get('/directions/{id}/skill','SkillController@dir');
+    $router->post('/directions/{id}/skill','SkillController@addSkillAndDir');
+    $router->post('/directions/{id}/skill/{skillId}','SkillController@addtodir');
     //---=API SKILLS END=---
 
     //---=API STOP_WORDS START=---
-    $router->get('/stop_word', 'StopWordController@all');
-    $router->get('/stop_word/{id}','StopWordController@showone');
-    $router->post('/stop_word', 'StopWordController@create');
-    $router->put('/stop_word/{id}','StopWordController@update');
-    $router->delete('/stop_word','StopWordController@del_all');
-    $router->delete('/stop_word/{id}','StopWordController@delete');
+    $router->get('/stopword', 'StopWordController@all');
+    $router->get('/stopword/{id}','StopWordController@showone');
+    $router->get('/crawler/{id}/stopword','StopWordController@showByCrawler');
+    $router->post('/stopword', 'StopWordController@create');
+    $router->put('/stopword/{id}','StopWordController@update');
+    $router->delete('/stopword','StopWordController@del_all');
+    $router->delete('/stopword/{id}','StopWordController@delete');
+    $router->delete('/crawler/{id}/stopword','StopWordController@deleteByCrawler');
            
     //---=API STOP_WORDS END=--- 
     $router->post('/skills', 'SkillController@create_array');
     //---=API SKILLS END=---
+    $router->get('/crawlergraph', 'GraphController@getCrawlerResult');
     $router->get('/graphskill', 'GraphController@getGraphSkill');
+    $router->get('/graphskill/search', 'GraphController@getSkills');
+
 });
